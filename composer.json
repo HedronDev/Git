@@ -1,6 +1,7 @@
 {
     "name": "hedron/git",
     "description": "A git project type.",
+    "license": "GPL-3.0+",
     "authors": [
         {
             "name": "Kris Vanderwater",
