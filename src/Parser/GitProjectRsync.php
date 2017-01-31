@@ -22,8 +22,21 @@ class GitProjectRsync extends BaseParser {
     if (!file_exists($applicationDir) || !is_dir($applicationDir)) {
       throw new \Exception("The project is missing an \"application\" directory.");
     }
-    $commandStack->addCommand("rsync -av $applicationDir/ {$this->getDataDirectoryPath()}");
-    $commandStack->execute();
+    $parse = FALSE;
+    foreach ($handler->getCommittedFiles() as $file_name) {
+      if (strpos($file_name, 'application/') === 0) {
+        $parse = TRUE;
+        break;
+      }
+    }
+    if ($parse) {
+      $commandStack->addCommand("rsync -av $applicationDir/ {$this->getDataDirectoryPath()}");
+      $commandStack->addCommand("cd {$this->getDataDirectoryPath()}");
+      $commandStack->addCommand("find -perm /200 -exec chmod g+w {} \\;");
+      $commandStack->addCommand("find -type d -exec chmod g+s {} \\;");
+      $commandStack->addCommand("chgrp -R www-data .");
+      $commandStack->execute();
+    }
   }
 
 }
